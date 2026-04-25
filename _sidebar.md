@@ -1,5 +1,6 @@
 - **Getting Started**
   - [Overview](README.md)
+  - [Installation](docs/installation.md)
   - [Quick Start](docs/quick-start.md)
 
 - **Core Concepts**
