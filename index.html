@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Marine Orchestrator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Multi-agent orchestration for the marine team — coordinate agents across repos, sprints, and critical decisions.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <style>
+    :root {
+      --theme-color: #1a7fc1;
+      --sidebar-background: #0d1117;
+      --sidebar-nav-link-color: #c9d1d9;
+      --sidebar-nav-link-color--active: #58a6ff;
+      --sidebar-name-color: #f0f6fc;
+      --base-background-color: #0d1117;
+      --base-color: #c9d1d9;
+      --heading-color: #f0f6fc;
+      --link-color: #58a6ff;
+      --code-background: #161b22;
+      --code-theme-background: #161b22;
+      --mono-font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      --sidebar-width: 280px;
+    }
+    .app-name-link img { height: 32px; }
+    .sidebar { border-right: 1px solid #21262d; }
+    blockquote { border-left: 4px solid #1a7fc1; background: #161b22; }
+    .tip { background: #0d2818; border-left-color: #3fb950; }
+    .warning { background: #2d1f00; border-left-color: #d29922; }
+    .danger { background: #2d0f0f; border-left-color: #f85149; }
+    table th { background: #161b22; }
+    table tr:nth-child(even) { background: #0d1117; }
+    table tr:nth-child(odd) { background: #161b22; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: '⚓ Marine Orchestrator',
+      repo: 'https://github.com/Wsangsrichan/marine-orchestrator',
+      loadSidebar: true,
+      loadNavbar: true,
+      subMaxLevel: 3,
+      auto2top: true,
+      coverpage: true,
+      onlyCover: false,
+      search: {
+        placeholder: 'Search docs...',
+        noData: 'No results.',
+        depth: 4,
+      },
+      pagination: {
+        previousText: '← Prev',
+        nextText: 'Next →',
+        crossChapter: true,
+      },
+      copyCode: {
+        buttonText: 'Copy',
+        errorText: 'Error',
+        successText: 'Copied!'
+      },
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-copy-code@2/dist/docsify-copy-code.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-markdown.min.js"></script>
+</body>
+</html>
