@@ -6,39 +6,430 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Multi-agent orchestration for the marine team — coordinate agents across repos, sprints, and critical decisions.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <style>
+    /* ── Marine Color System (from marine.ipptt.com) ─────────────── */
     :root {
-      --theme-color: #1a7fc1;
-      --sidebar-background: #0d1117;
-      --sidebar-nav-link-color: #c9d1d9;
-      --sidebar-nav-link-color--active: #58a6ff;
-      --sidebar-name-color: #f0f6fc;
-      --base-background-color: #0d1117;
-      --base-color: #c9d1d9;
-      --heading-color: #f0f6fc;
-      --link-color: #58a6ff;
-      --code-background: #161b22;
-      --code-theme-background: #161b22;
-      --mono-font-family: 'JetBrains Mono', 'Fira Code', monospace;
-      --sidebar-width: 280px;
+      --navy-950: #060f1d;
+      --navy-900: #0a192f;
+      --navy-800: #1d3674;
+      --navy-700: #233f7e;
+      --navy-600: #294889;
+      --navy-400: #4d69a2;
+      --navy-300: #6c83b2;
+      --navy-200: #96a6c8;
+      --cyan-400: #22d3ee;
+      --cyan-300: #67e8f9;
+      --teal-400: #2dd4bf;
+
+      /* Docsify theme vars */
+      --theme-color: var(--cyan-400);
+      --sidebar-background: var(--navy-950);
+      --sidebar-nav-link-color: var(--navy-200);
+      --sidebar-nav-link-color--hover: var(--cyan-400);
+      --sidebar-nav-link-color--active: var(--cyan-400);
+      --sidebar-name-color: #fff;
+      --sidebar-name-font-weight: 700;
+      --sidebar-nav-link-font-size: 0.85rem;
+      --base-background-color: var(--navy-900);
+      --base-color: var(--navy-200);
+      --heading-color: #fff;
+      --link-color: var(--cyan-400);
+      --link-color--hover: var(--cyan-300);
+      --code-background: rgba(34,211,238,0.06);
+      --code-theme-background: rgba(6,15,29,0.8);
+      --code-font-size: 0.85em;
+      --mono-font-family: 'JetBrains Mono', monospace;
+      --base-font-family: 'Inter', sans-serif;
+      --sidebar-width: 270px;
+      --border-color: rgba(34,211,238,0.12);
+      --cover-background-color: var(--navy-950);
     }
-    .app-name-link img { height: 32px; }
-    .sidebar { border-right: 1px solid #21262d; }
-    blockquote { border-left: 4px solid #1a7fc1; background: #161b22; }
-    .tip { background: #0d2818; border-left-color: #3fb950; }
-    .warning { background: #2d1f00; border-left-color: #d29922; }
-    .danger { background: #2d0f0f; border-left-color: #f85149; }
-    table th { background: #161b22; }
-    table tr:nth-child(even) { background: #0d1117; }
-    table tr:nth-child(odd) { background: #161b22; }
+
+    /* ── Global background (gradient-bg + grid-pattern) ──────────── */
+    body {
+      background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 50%, #0c2340 100%);
+      background-attachment: fixed;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .app-nav, .sidebar-toggle, #main {
+      background: transparent;
+    }
+
+    /* Grid pattern overlay on main content area */
+    #main::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34,211,238,0.03) 1px, transparent 0),
+        linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 0);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────────────── */
+    .sidebar {
+      border-right: 1px solid rgba(34,211,238,0.12);
+      background: rgba(6,15,29,0.95) !important;
+      backdrop-filter: blur(12px);
+    }
+
+    .sidebar > h1 a {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--cyan-400) !important;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar > h1 a::before { content: '<'; opacity: 0.6; }
+    .sidebar > h1 a::after  { content: ' />'; opacity: 0.6; }
+
+    .sidebar-nav > ul > li > a {
+      color: var(--navy-200);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      pointer-events: none;
+      padding-top: 1rem;
+    }
+
+    .sidebar-nav > ul > li > ul > li > a {
+      color: var(--navy-200);
+      font-size: 0.82rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 1;
+      pointer-events: auto;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav > ul > li > ul > li > a:hover,
+    .sidebar-nav > ul > li > ul > li.active > a {
+      color: var(--cyan-400);
+      background: rgba(34,211,238,0.06);
+    }
+
+    /* ── App nav (top right) ─────────────────────────────────────── */
+    .app-nav {
+      background: rgba(6,15,29,0.9);
+      border-bottom: 1px solid rgba(34,211,238,0.1);
+      backdrop-filter: blur(12px);
+    }
+
+    .app-nav a {
+      color: var(--navy-200) !important;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .app-nav a:hover { color: var(--cyan-400) !important; }
+
+    /* ── Main content ─────────────────────────────────────────────── */
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4 {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    h1 { font-size: 2.2rem; border-bottom: 1px solid rgba(34,211,238,0.12); padding-bottom: 0.75rem; }
+    h2 { font-size: 1.4rem; margin-top: 2.5rem; color: var(--cyan-400); }
+    h3 { font-size: 1.1rem; color: var(--navy-200); }
+
+    /* Inline code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(34,211,238,0.06);
+      border: 1px solid rgba(34,211,238,0.12);
+      color: var(--cyan-300);
+      border-radius: 4px;
+      padding: 0.1em 0.4em;
+      font-size: 0.85em;
+    }
+
+    /* Code blocks */
+    pre {
+      background: rgba(6,15,29,0.85) !important;
+      border: 1px solid rgba(34,211,238,0.12);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    pre code {
+      background: transparent;
+      border: none;
+      color: var(--navy-200);
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    /* Tables */
+    table {
+      border: 1px solid rgba(34,211,238,0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    thead { background: rgba(34,211,238,0.06); }
+    th {
+      color: var(--cyan-400);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(34,211,238,0.15);
+    }
+
+    td { border-color: rgba(34,211,238,0.08); color: var(--navy-200); }
+    tr:nth-child(even) td { background: rgba(6,15,29,0.3); }
+    tr:nth-child(odd) td { background: transparent; }
+    tr:hover td { background: rgba(34,211,238,0.04); }
+
+    /* Blockquotes */
+    blockquote {
+      border-left: 3px solid var(--cyan-400);
+      background: rgba(34,211,238,0.04);
+      border-radius: 0 8px 8px 0;
+      color: var(--navy-200);
+      padding: 1rem 1.25rem;
+      font-style: italic;
+    }
+
+    blockquote strong { color: var(--cyan-300); font-style: normal; }
+
+    /* Tips / callouts */
+    .tip {
+      background: rgba(34,211,238,0.06);
+      border-left-color: var(--cyan-400);
+      border-radius: 0 8px 8px 0;
+    }
+    .warning {
+      background: rgba(234,179,8,0.06);
+      border-left-color: #d29922;
+    }
+    .danger {
+      background: rgba(248,81,73,0.06);
+      border-left-color: #f85149;
+    }
+
+    /* Links */
+    a { color: var(--cyan-400); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--cyan-300); }
+
+    /* Horizontal rule */
+    hr { border-color: rgba(34,211,238,0.12); margin: 2rem 0; }
+
+    /* Search box */
+    .search input {
+      background: rgba(6,15,29,0.8);
+      border: 1px solid rgba(34,211,238,0.2);
+      color: #fff;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .search input:focus {
+      border-color: var(--cyan-400);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.1);
+    }
+
+    .search input::placeholder { color: var(--navy-300); }
+
+    /* ── Cover page ───────────────────────────────────────────────── */
+    section.cover {
+      background:
+        linear-gradient(rgba(34,211,238,0.03) 1px, transparent 0),
+        linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 0),
+        linear-gradient(135deg, var(--navy-950) 0%, var(--navy-900) 50%, #0c2340 100%) !important;
+      background-size: 60px 60px, 60px 60px, 100% 100% !important;
+    }
+
+    section.cover .cover-main {
+      position: relative;
+    }
+
+    section.cover h1 {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      border: none;
+      padding: 0;
+    }
+
+    section.cover h1 em {
+      font-style: normal;
+      background: linear-gradient(to right, var(--cyan-400), var(--teal-400), var(--cyan-300));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    section.cover p {
+      color: var(--navy-200);
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    section.cover .cover-main > p:last-child a {
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    section.cover .cover-main > p:last-child a:first-child {
+      background: var(--cyan-400);
+      color: var(--navy-950) !important;
+      border: none;
+    }
+
+    section.cover .cover-main > p:last-child a:first-child:hover {
+      background: var(--cyan-300);
+      box-shadow: 0 0 20px rgba(34,211,238,0.3);
+    }
+
+    section.cover .cover-main > p:last-child a:not(:first-child) {
+      border: 1px solid rgba(34,211,238,0.3);
+      color: var(--cyan-400) !important;
+      background: transparent;
+    }
+
+    section.cover .cover-main > p:last-child a:not(:first-child):hover {
+      background: rgba(34,211,238,0.08);
+    }
+
+    /* Glow orbs on cover */
+    section.cover::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 20%;
+      width: 400px;
+      height: 400px;
+      background: rgba(34,211,238,0.04);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    section.cover::after {
+      content: '';
+      position: absolute;
+      bottom: 20%;
+      right: 20%;
+      width: 320px;
+      height: 320px;
+      background: rgba(45,212,191,0.04);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 6s ease-in-out infinite reverse;
+      animation-delay: 3s;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-20px); }
+    }
+
+    /* Badge (inline pill in cover) */
+    section.cover p > img[src*="shields.io"] {
+      filter: none;
+    }
+
+    /* Pagination */
+    .pagination-item a {
+      color: var(--cyan-400);
+      border: 1px solid rgba(34,211,238,0.2);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .pagination-item a:hover {
+      background: rgba(34,211,238,0.08);
+      border-color: var(--cyan-400);
+    }
+
+    /* Sidebar toggle button */
+    .sidebar-toggle { background: rgba(6,15,29,0.8); }
+    .sidebar-toggle span { background: var(--navy-300); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy-950); }
+    ::-webkit-scrollbar-thumb { background: rgba(34,211,238,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(34,211,238,0.4); }
+
+    /* Selection */
+    ::selection { background: rgba(34,211,238,0.2); color: #fff; }
+
+    /* Copy code button */
+    .docsify-copy-code-button {
+      background: rgba(34,211,238,0.1) !important;
+      color: var(--navy-200) !important;
+      border: 1px solid rgba(34,211,238,0.15) !important;
+      border-radius: 4px !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 0.7rem !important;
+    }
+
+    .docsify-copy-code-button:hover { background: rgba(34,211,238,0.2) !important; }
+    .docsify-copy-code-button.success { color: var(--cyan-400) !important; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      section.cover h1 { font-size: 2.2rem; }
+      h1 { font-size: 1.7rem; }
+    }
+
+    /* ── Pulse glow for active nav items ─────────────────────────── */
+    .sidebar-nav .active > a {
+      position: relative;
+    }
+
+    .sidebar-nav .active > a::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: var(--cyan-400);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(34,211,238,0.5);
+    }
   </style>
 </head>
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: '⚓ Marine Orchestrator',
+      name: '&lt;Marine /&gt;',
+      nameLink: '/',
       repo: 'https://github.com/Wsangsrichan/marine-orchestrator',
       loadSidebar: true,
       loadNavbar: true,
